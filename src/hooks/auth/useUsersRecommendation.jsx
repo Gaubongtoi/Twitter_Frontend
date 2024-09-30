@@ -6,7 +6,7 @@ const useUsersRecommendation = () => {
         revalidateOnFocus: true,
         revalidateOnReconnect: true,
         shouldRetryOnError: false,
-        refreshInterval: 20000,
+        refreshInterval: 100000,
         onError: (err) => {
             console.error(`Error fetching data. Status: ${err?.status}, Info:`, err?.info);
         },

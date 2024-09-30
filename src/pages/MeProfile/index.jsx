@@ -5,9 +5,11 @@ import Header from '../../components/Layouts/components/Header';
 import useCurrentUser from '../../hooks/auth/useCurrentUser';
 import MeHero from '../../components/MeHero';
 import MeBio from '../../components/MeBio';
+import TweetFeed from '../../components/TweetFeed';
+import Form from '../../components/Form';
 function MeProfile() {
     const { data: fetchedUser, isLoading } = useCurrentUser();
-    console.log(fetchedUser?.result._id);
+    // console.log(fetchedUser?.result._id);
 
     if (isLoading || !fetchedUser) {
         return (
@@ -21,6 +23,8 @@ function MeProfile() {
             <Header label={fetchedUser?.result?.name + ' ' + '(Me)'} showBackArrow />
             <MeHero user_id={fetchedUser?.result?._id} />
             <MeBio user_id={fetchedUser?.result?._id} />
+            <Form placeholder="What's happening?" />
+            <TweetFeed user_id={fetchedUser?.result?._id} />
         </>
     );
 }

@@ -6,11 +6,11 @@ import useUser from '../../hooks/auth/useUser';
 import Header from '../../components/Layouts/components/Header';
 import UserHero from '../../components/UserHero';
 import UserBio from '../../components/UserBio';
+import TweetFeed from '../../components/TweetFeed';
 function UserProfile() {
     const [searchParams] = useSearchParams();
     const user_id = searchParams.get('user_id');
     const { data: fetchedUser, isLoading } = useUser(user_id);
-    console.log();
 
     if (isLoading || !fetchedUser) {
         return (
@@ -24,6 +24,7 @@ function UserProfile() {
             <Header label={fetchedUser?.result?.name} showBackArrow />
             <UserHero user_id={user_id} />
             <UserBio user_id={user_id} />
+            <TweetFeed user_id={user_id} />
         </>
     );
 }

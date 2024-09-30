@@ -4,13 +4,23 @@ import { privateRoutes, publicRoutes } from './routes';
 import { Fragment } from 'react';
 import ModalLoginNoti from './components/Modal/ModalLoginNoti';
 import ModalEdit from './components/Modal/ModalEdit';
+import useEditModal from './hooks/modal/useEditModal';
+import useLoginNoti from './hooks/modal/useLoginNoti';
+import ModalRetweet from './components/Modal/ModalRetweet';
+import useRetweet from './hooks/modal/useRetweet';
 function App() {
+    const editModal = useEditModal();
+    const loginModal = useLoginNoti();
+    const retweetModal = useRetweet();
+
     return (
         <>
             <div>
                 <Router>
-                    <ModalLoginNoti />
-                    <ModalEdit />
+                    {loginModal.isOpen && <ModalLoginNoti />}
+                    {editModal.isOpen && <ModalEdit />}
+                    {retweetModal.isOpen && <ModalRetweet />}
+
                     <Routes>
                         {publicRoutes.map((route, index) => {
                             let Layout;

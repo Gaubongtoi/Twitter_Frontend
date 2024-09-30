@@ -7,8 +7,8 @@ import Button from '../Button';
 import useCurrentUser from '../../hooks/auth/useCurrentUser';
 
 function Sidebar() {
-    const { data: currentUser } = useCurrentUser();
-    console.log(currentUser);
+    // const { data: currentUser } = useCurrentUser();
+    // console.log(currentUser);
     const items = [
         { label: 'Home', href: '/', icon: <PiHouseBold size={26}></PiHouseBold>, auth: true },
         { label: 'Notification', href: '/notification', icon: <FaRegBell size={26}></FaRegBell>, auth: true },

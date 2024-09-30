@@ -5,5 +5,6 @@ const useLoginNoti = create((set) => ({
     onOpen: () => set({ isOpen: true }),
     onClose: () => set({ isOpen: false }),
 }));
-
+export const login = useLoginNoti.getState().onOpen;
+export const logout = useLoginNoti.getState().onClose;
 export default useLoginNoti;

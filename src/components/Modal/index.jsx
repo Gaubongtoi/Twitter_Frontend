@@ -3,7 +3,7 @@ import { AiOutlineClose } from 'react-icons/ai';
 import Button from '../Button';
 import { useNavigate } from 'react-router-dom';
 
-function Modal({ isOpen, onClose, onSubmit, title, body, footer, actionLabel, disabled, redirect, href = '/' }) {
+function Modal({ isOpen, onClose, title, body, footer, disabled, redirect, href }) {
     const navigate = useNavigate();
     useEffect(() => {
         if (isOpen) {
@@ -31,21 +31,11 @@ function Modal({ isOpen, onClose, onSubmit, title, body, footer, actionLabel, di
 
     const handleClose = useCallback(() => {
         if (disabled) return;
-        if (!redirect) {
+        if (href) {
             navigate(href);
         }
         onClose();
-    }, [disabled, onClose]);
-
-    const handleSubmit = useCallback(() => {
-        if (disabled) {
-            return;
-        }
-        if (href && redirect) {
-            navigate(`${href}`);
-        }
-        onSubmit();
-    }, [disabled, onSubmit]);
+    }, [disabled, onClose, href, navigate]);
     if (!isOpen) {
         return null;
     }
@@ -79,20 +69,9 @@ function Modal({ isOpen, onClose, onSubmit, title, body, footer, actionLabel, di
                             )}
                         </div>
                         {/* Body */}
-                        <div className="relative p-10 flex-auto">{body}</div>
+                        <div className="relative px-10 flex-auto">{body}</div>
                         {/* Footer */}
-                        <div className="flex flex-col gap-2 p-10">
-                            {href && !redirect ? (
-                                <Button href={`/signin`} primary rounded onClick={handleSubmit}>
-                                    {actionLabel}
-                                </Button>
-                            ) : (
-                                <Button primary rounded onClick={handleSubmit}>
-                                    {actionLabel}
-                                </Button>
-                            )}
-                            {footer}
-                        </div>
+                        <div className="flex flex-col gap-2 p-10">{footer}</div>
                     </div>
                 </div>
             </div>

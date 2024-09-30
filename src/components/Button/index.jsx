@@ -10,6 +10,7 @@ const Button = forwardRef(
             to,
             href,
             primary = false,
+            secondary = false,
             outline = false,
             disabled = false,
             rounded = false,
@@ -25,6 +26,7 @@ const Button = forwardRef(
             edit = false,
             managerOrder = false,
             manageReturn = false,
+            // isLarge = false,
             ...passProps
         },
         ref,
@@ -56,11 +58,16 @@ const Button = forwardRef(
 
         const classes = [
             baseClasses,
-            primary ? 'bg-blue-600 text-white w-full' : '',
+            primary
+                ? 'bg-blue-600 text-white w-full hover:border-[rgba(22,24,35,0.2)] hover:bg-primary_darken cursor-pointer'
+                : '',
+            secondary
+                ? 'bg-dark_8 text-black w-full hover:text-white hover:border-[rgba(22,24,35,0.2)] hover:bg-dark_6 cursor-pointer'
+                : '',
             outline ? 'border border-current bg-white text-blue-600 hover:bg-red-100' : '',
             disabled ? 'opacity-50 pointer-events-none' : '',
             rounded
-                ? 'rounded-full text-white font-bold text-sm min-w-[20px] border border-[rgba(22,24,35,0.12)] shadow-sm py-3 px-[80px] hover:border-[rgba(22,24,35,0.2)] hover:bg-primary_darken cursor-pointer w-full'
+                ? 'rounded-full font-bold text-sm min-w-[20px] border border-[rgba(22,24,35,0.12)] shadow-sm py-3 px-[80px] w-full'
                 : '',
             w_3 ? 'w-1/3' : '',
             text ? 'relative' : '',
@@ -72,6 +79,7 @@ const Button = forwardRef(
             edit ? 'bg-blue-800 text-white' : '',
             managerOrder ? 'flex-basis-3/12 text-sm p-2' : '',
             manageReturn ? 'flex-basis-14 text-sm' : '',
+            // isLarge ? 'w-full' : 'w-1/4',
         ].join(' ');
 
         return href ? (

@@ -7,8 +7,10 @@ function MeHero() {
     // console.log(fetchedUser.result.cover_photo);
 
     return (
-        <div className="bg-dark_6 h-44 relative">
-            {currentUser.result.cover_photo && <img className="object-cover rounded-full w-full h-full" alt="Avatar" />}
+        <div className="bg-blue-500 h-44 relative">
+            {currentUser.result.cover_photo && (
+                <img className="object-cover w-full h-full" alt="Avatar" src={currentUser.result.cover_photo} />
+            )}
             <div className="absolute -bottom-16 left-4">
                 <Avatar userId={currentUser.result._id} isLarge hasBorder />
             </div>

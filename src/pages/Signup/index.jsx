@@ -55,13 +55,11 @@ function Signup() {
             ...data,
             date_of_birth: localDateISOString,
         };
-        console.log('Click');
-
         try {
             let response = await http.post(`/api/user/register`, dataBody);
-            console.log(response);
+            // console.log(response);
         } catch (error) {
-            console.log(error.response.data);
+            // console.log(error.response.data);
         }
     };
     return (

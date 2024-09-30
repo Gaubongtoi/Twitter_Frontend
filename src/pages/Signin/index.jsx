@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import images from '../../assets/images';
 import Button from '../../components/Button';
 import { useForm } from 'react-hook-form';
@@ -39,45 +39,80 @@ function Signin() {
         },
         resolver: yupResolver(schema),
     });
-    const handleLogin = (data) => {
+    const handleLogin = async (data) => {
         const loadingToast = toast.loading('Waiting...');
+        const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         open();
-        setTimeout(async () => {
-            try {
-                let response = await http.post('/api/user/login', data);
-                console.log(response);
-                localStorage.setItem('accessToken', response.data.result.access_token);
-                localStorage.setItem('refreshToken', response.data.result.refresh_token);
-                login();
-                setErrorDisplay(false);
-                toast.success(`${response.data.msg}! Welcome ${response.data.result.user.name}`, {
-                    id: loadingToast,
-                    style: {
-                        border: '1px solid #1E82BF',
-                        padding: '16px',
-                        color: '#1E82BF',
-                    },
-                    iconTheme: {
-                        primary: '#1E82BF',
-                        secondary: '#FFFAEE',
-                    },
-                });
-                close();
-                navigate('/');
-            } catch (error) {
-                toast.error(`${error.response?.data?.errors?.email?.msg || 'Unknown error'}`, {
-                    id: loadingToast,
-                });
-                setErrorDisplay(true);
-                setErrorMes(() => {
-                    return {
-                        msg: error.response?.data?.errors?.email?.msg || 'Unknown error',
-                        status: error.response?.status || 500,
-                    };
-                });
-                close();
-            }
-        }, 5000);
+        try {
+            await delay(import.meta.env.VITE_DELAY_REQUEST);
+            let response = await http.post('/api/user/login', data);
+            localStorage.setItem('accessToken', response.data.result.access_token);
+            localStorage.setItem('refreshToken', response.data.result.refresh_token);
+            login();
+            setErrorDisplay(false);
+            toast.success(`${response.data.msg}! Welcome ${response.data.result.user.name}`, {
+                id: loadingToast,
+                style: {
+                    border: '1px solid #1E82BF',
+                    padding: '16px',
+                    color: '#1E82BF',
+                },
+                iconTheme: {
+                    primary: '#1E82BF',
+                    secondary: '#FFFAEE',
+                },
+            });
+            close();
+            navigate('/');
+        } catch (error) {
+            toast.error(`${error.response?.data?.errors?.email?.msg || 'Unknown error'}`, {
+                id: loadingToast,
+            });
+            setErrorDisplay(true);
+            setErrorMes(() => {
+                return {
+                    msg: error.response?.data?.errors?.email?.msg || 'Unknown error',
+                    status: error.response?.status || 500,
+                };
+            });
+            close();
+        }
+        // setTimeout(async () => {
+        //     try {
+        //         let response = await http.post('/api/user/login', data);
+        //         console.log(response);
+        //         localStorage.setItem('accessToken', response.data.result.access_token);
+        //         localStorage.setItem('refreshToken', response.data.result.refresh_token);
+        //         login();
+        //         setErrorDisplay(false);
+        //         toast.success(`${response.data.msg}! Welcome ${response.data.result.user.name}`, {
+        //             id: loadingToast,
+        //             style: {
+        //                 border: '1px solid #1E82BF',
+        //                 padding: '16px',
+        //                 color: '#1E82BF',
+        //             },
+        //             iconTheme: {
+        //                 primary: '#1E82BF',
+        //                 secondary: '#FFFAEE',
+        //             },
+        //         });
+        //         close();
+        //         navigate('/');
+        //     } catch (error) {
+        //         toast.error(`${error.response?.data?.errors?.email?.msg || 'Unknown error'}`, {
+        //             id: loadingToast,
+        //         });
+        //         setErrorDisplay(true);
+        //         setErrorMes(() => {
+        //             return {
+        //                 msg: error.response?.data?.errors?.email?.msg || 'Unknown error',
+        //                 status: error.response?.status || 500,
+        //             };
+        //         });
+        //         close();
+        //     }
+        // }, import.meta.env.VITE_DELAY_REQUEST);
         // ...
     };
     return (

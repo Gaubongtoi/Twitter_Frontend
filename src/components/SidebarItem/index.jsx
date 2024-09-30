@@ -13,8 +13,6 @@ function SidebarItem({ href, label, icon, onClick, auth }) {
             return onClick();
         }
         if (auth && !isLoggedIn) {
-            console.log('Helolololo');
-
             loginModal.onOpen();
         } else if (href) {
             navigate(href);

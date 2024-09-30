@@ -15,23 +15,32 @@ const fetcher = async (url) => {
         throw error;
     } catch (error) {
         if (error.response) {
+            const { logout } = useLoginState.getState();
+            const loginState = useLoginNoti.getState();
+            const errorMessage = error.response.data?.message || 'Unknown error';
+
             error.info = error.response.data;
             error.status = error.response.status;
+
+            // Handle 401 Unauthorized errors
             if (error.status === 401) {
-                // Handle 401 Unauthorized error
-                const { logout } = useLoginState.getState();
-                const loginState = useLoginNoti.getState();
-                if (error.response.data?.message === 'Jwt expired') {
-                    // If refresh token has expired
+                if (errorMessage === 'Jwt expired') {
+                    // Handle expired JWT token
                     toast.error('Session expired. Please log in again.');
                     loginState.onOpen();
                     logout(); // Call the logout function to clear session
+                } else if (errorMessage === 'Refresh Token have been used or not exist') {
+                    // Handle refresh token used or not existing
+                    // toast.error('Invalid or used refresh token. Please log in again.');
+                    loginState.onOpen();
+                    logout(); // Clear session when refresh token is invalid
                 } else {
                     // Any other 401-related error
                     toast.error('Unauthorized access. Please log in again.');
                     loginState.onOpen();
-                    logout(); // Call the logout function to clear session
                 }
+
+                loginState.onClose();
             }
         } else if (!error.status) {
             // If no status is set (network errors)

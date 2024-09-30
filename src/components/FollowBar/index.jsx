@@ -3,7 +3,9 @@ import Avatar from '../Avatar';
 
 function FollowBar() {
     const { data: users } = useUsersRecommendation();
-    console.log(users?.followersRecommendation);
+    // console.log(users?.followersRecommendation);
+    // console.log(users);
+
     if (users?.followersRecommendation.length === 0) {
         return null;
     }
@@ -15,10 +17,14 @@ function FollowBar() {
                     {users?.followersRecommendation.map((user) => {
                         return (
                             <div key={user.userId} className="flex flex-row gap-4">
-                                <Avatar userId={user.userId} data={user} />
+                                <div className="w-1/4">
+                                    <Avatar userId={user.userId} data={user} />
+                                </div>
                                 <div className="flex flex-col justify-center">
-                                    <p className="font-semibold text-sm">{user.name}</p>
-                                    <p className="text-neutral-400 text-sm">
+                                    <p className="font-semibold text-sm leading-5 overflow-hidden text-ellipsis whitespace-nowrap w-[100px]">
+                                        {user.name}
+                                    </p>
+                                    <p className="text-neutral-400 text-sm leading-5 overflow-hidden text-ellipsis whitespace-nowrap w-[100px]">
                                         @{user.username ? user.username : user.name}
                                     </p>
                                 </div>

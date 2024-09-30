@@ -1,8 +1,15 @@
 import { createAvatar } from '@dicebear/core';
-import { adventurerNeutral } from '@dicebear/collection';
+import {
+    adventurerNeutral,
+    adventurer,
+    avataaars,
+    avataaarsNeutral,
+    croodlesNeutral,
+    openPeeps,
+} from '@dicebear/collection';
 
 export const generateAvatarUrl = (seed) => {
-    const avatar = createAvatar(adventurerNeutral, {
+    const avatar = createAvatar(openPeeps, {
         seed,
         width: 128,
         height: 128,

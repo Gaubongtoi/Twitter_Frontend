@@ -6,7 +6,7 @@ import { generateAvatarUrl } from '../../utils/avatarGenerator';
 function Avatar({ userId, isLarge, hasBorder = false }) {
     const navigate = useNavigate();
     const { data: fetcherData } = useUser(userId);
-    console.log(fetcherData);
+    // console.log(fetcherData);
 
     const onClick = useCallback(
         (e) => {
@@ -19,11 +19,16 @@ function Avatar({ userId, isLarge, hasBorder = false }) {
     const avatarUrl = fetcherData?.result?.avatar || generateAvatarUrl(userId);
     return (
         <div
-            className={`${hasBorder ? 'border-4 border-white' : 'border-2 border-black'} ${isLarge ? 'h-32' : 'h-12'} ${
-                isLarge ? 'w-32' : 'w-12'
-            } rounded-full hover:opacity-90 transition cursor-pointer relative`}
+            className={`${hasBorder ? 'border-4 border-white' : 'border-2 border-gray-500'} ${
+                isLarge ? 'h-32' : 'h-12'
+            } ${isLarge ? 'w-32' : 'w-12'} rounded-full hover:opacity-90 transition cursor-pointer relative`}
         >
-            <img className="object-cover rounded-full w-full h-full" alt="Avatar" onClick={onClick} src={avatarUrl} />
+            <img
+                className="object-cover rounded-full w-full h-full bg-blue-400"
+                alt="Avatar"
+                onClick={onClick}
+                src={avatarUrl}
+            />
         </div>
     );
 }

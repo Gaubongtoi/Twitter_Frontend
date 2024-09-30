@@ -1,12 +1,12 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import useLoginState, { login, logout } from '../hooks/state/useLoginState';
-import { useSWRConfig } from 'swr';
+import { login } from '../hooks/state/useLoginState';
+import useLoginNoti from '../hooks/modal/useLoginNoti';
 class Http {
     constructor() {
         this.instance = axios.create({
             baseURL: import.meta.env.VITE_URL_SERVER,
-            timeout: 10000,
+            timeout: 100000,
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -23,6 +23,13 @@ class Http {
             '/api/user/follow/:user_id',
             '/api/user/change_password',
             '/api/user/recommendations',
+            // Medias
+            '/api/medias/upload-image',
+            // Tweets
+            '/api/tweets',
+            //Like
+            'api/likes',
+            // 'api/likes/tweets',
 
             //
             '/api/orders',
@@ -31,7 +38,14 @@ class Http {
         this.instance.interceptors.request.use(
             (config) => {
                 console.log('Request config:', config);
-                const isProtectedRoute = this.protectedRoutes.some((route) => config.url.includes(route));
+
+                // Lấy đường dẫn của URL từ config
+                const requestPath = new URL(config.url, window.location.origin).pathname;
+                // Kiểm tra xem URL có khớp với một trong các route cần bảo vệ
+                const isProtectedRoute = this.protectedRoutes.some((route) => {
+                    return requestPath === route;
+                });
+
                 if (isProtectedRoute) {
                     const accessToken = localStorage.getItem('accessToken');
                     if (accessToken) {
@@ -40,7 +54,7 @@ class Http {
                         console.log('No access token found');
                     }
                 }
-
+                login();
                 return config;
             },
             (error) => {
@@ -75,7 +89,8 @@ class Http {
                         return Promise.reject(error);
                     }
                     try {
-                        console.log('Sending refresh token request');
+                        console.log('Sending refresh token request: ');
+
                         const res = await axios.post(`${import.meta.env.VITE_URL_SERVER}/api/user/refresh-token`, {
                             refresh_token: refreshToken,
                         });
