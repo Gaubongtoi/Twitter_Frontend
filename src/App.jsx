@@ -1,25 +1,24 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { privateRoutes, publicRoutes } from './routes';
-import { Fragment } from 'react';
+import { Fragment, useCallback } from 'react';
 import ModalLoginNoti from './components/Modal/ModalLoginNoti';
 import ModalEdit from './components/Modal/ModalEdit';
 import useEditModal from './hooks/modal/useEditModal';
 import useLoginNoti from './hooks/modal/useLoginNoti';
-import ModalRetweet from './components/Modal/ModalRetweet';
-import useRetweet from './hooks/modal/useRetweet';
+import useQuote from './hooks/modal/useQuote';
+import ModalQuote from './components/Modal/ModalQuote';
 function App() {
     const editModal = useEditModal();
     const loginModal = useLoginNoti();
-    const retweetModal = useRetweet();
-
+    const quoteModal = useQuote();
     return (
         <>
             <div>
                 <Router>
                     {loginModal.isOpen && <ModalLoginNoti />}
                     {editModal.isOpen && <ModalEdit />}
-                    {retweetModal.isOpen && <ModalRetweet />}
+                    {quoteModal.isOpen && <ModalQuote />}
 
                     <Routes>
                         {publicRoutes.map((route, index) => {

@@ -12,6 +12,11 @@ function ModalLoginNoti() {
         loginModal.onClose();
         setIsLoading(false);
     }, [loginModal]);
+    // const handleClickOut = useCallback(() => {
+    //     loginModal.onClose();
+    // }, [loginModal]);
+
+    // window.addEventListener('click', handleClickOut);
     const footerContent = (
         <div className="flex flex-col gap-4 items-center pt-2">
             <Button href={`/signin`} primary rounded onClick={redirectClick}>

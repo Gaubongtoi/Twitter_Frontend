@@ -52,15 +52,6 @@ function Signin() {
             setErrorDisplay(false);
             toast.success(`${response.data.msg}! Welcome ${response.data.result.user.name}`, {
                 id: loadingToast,
-                style: {
-                    border: '1px solid #1E82BF',
-                    padding: '16px',
-                    color: '#1E82BF',
-                },
-                iconTheme: {
-                    primary: '#1E82BF',
-                    secondary: '#FFFAEE',
-                },
             });
             close();
             navigate('/');

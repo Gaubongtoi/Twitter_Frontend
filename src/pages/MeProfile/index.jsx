@@ -23,7 +23,7 @@ function MeProfile() {
             <Header label={fetchedUser?.result?.name + ' ' + '(Me)'} showBackArrow />
             <MeHero user_id={fetchedUser?.result?._id} />
             <MeBio user_id={fetchedUser?.result?._id} />
-            <Form placeholder="What's happening?" />
+            <Form placeholder="What's happening?" user_id={fetchedUser?.result?._id} />
             <TweetFeed user_id={fetchedUser?.result?._id} />
         </>
     );

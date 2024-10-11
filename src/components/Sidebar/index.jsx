@@ -15,7 +15,7 @@ function Sidebar() {
         { label: 'Profile', href: '/api/user/me', icon: <FaRegUser size={26}></FaRegUser>, auth: true },
         {
             label: 'Bookmark',
-            href: '/api/bookmark',
+            href: '/api/bookmarks',
             icon: <FaRegBookmark size={26}></FaRegBookmark>,
             auth: true,
         },
@@ -51,6 +51,22 @@ function Sidebar() {
                     </div>
                 </div>
             </div>
+            {/* <div className="hidden xl:flex flex-col items-center xl:items-start xl:w-[340px] p-2 fixed h-full border-r border-gray-400 pr-0 xl:pr-8">
+                <div className="flex items-center flex-col justify-center w-24 p-0 xl:ml-24">
+                    <SidebarLogo />
+                    {items.map((item, i) => {
+                        return (
+                            <SidebarItem
+                                key={item.href}
+                                href={item.href}
+                                label={item.label}
+                                icon={item.icon}
+                                auth={item.auth}
+                            ></SidebarItem>
+                        );
+                    })}
+                </div>
+            </div> */}
         </>
     );
 }

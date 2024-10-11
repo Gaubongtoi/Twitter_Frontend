@@ -27,8 +27,11 @@ class Http {
             '/api/medias/upload-image',
             // Tweets
             '/api/tweets',
-            //Like
+            '/api/tweets/remove',
+            // Like
             'api/likes',
+            // Bookmarks
+            'api/bookmarks',
             // 'api/likes/tweets',
 
             //
@@ -37,15 +40,10 @@ class Http {
         ];
         this.instance.interceptors.request.use(
             (config) => {
-                console.log('Request config:', config);
-
                 // Lấy đường dẫn của URL từ config
                 const requestPath = new URL(config.url, window.location.origin).pathname;
                 // Kiểm tra xem URL có khớp với một trong các route cần bảo vệ
-                const isProtectedRoute = this.protectedRoutes.some((route) => {
-                    return requestPath === route;
-                });
-
+                const isProtectedRoute = this.protectedRoutes.some((route) => requestPath.startsWith(route));
                 if (isProtectedRoute) {
                     const accessToken = localStorage.getItem('accessToken');
                     if (accessToken) {

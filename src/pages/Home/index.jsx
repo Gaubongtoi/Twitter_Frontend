@@ -5,7 +5,7 @@ import useCurrentUser from '../../hooks/auth/useCurrentUser';
 
 function Home() {
     return (
-        <div>
+        <div className="h-full">
             <Header label="Home" />
             <Form placeholder="What's happening?" />
             <TweetFeed />

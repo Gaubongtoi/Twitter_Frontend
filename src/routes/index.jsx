@@ -1,5 +1,6 @@
 import DefaultLayout from '../components/Layouts/DefaultLayout';
 import SinginSignup from '../components/Layouts/SinginSignup';
+import BookmarkView from '../pages/BookmarkView';
 import Home from '../pages/Home';
 import MeProfile from '../pages/MeProfile';
 import Signin from '../pages/Signin';
@@ -17,6 +18,8 @@ const privateRoutes = [
     { path: '/api/user/me', component: MeProfile, layout: DefaultLayout },
     // Tweet Routes
     { path: '/api/tweets/:tweet_id', component: TweetView, layout: DefaultLayout },
+    // Bookmark
+    { path: '/api/bookmarks', component: BookmarkView, layout: DefaultLayout },
 ];
 
 export { publicRoutes, privateRoutes };

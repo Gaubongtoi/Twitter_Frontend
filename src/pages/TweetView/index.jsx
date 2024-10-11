@@ -25,8 +25,8 @@ function TweetView() {
     return (
         <div>
             <Header label="Tweet" showBackArrow />
-            <TweetItem data={fetchedTweet?.result} />
-            <Form postId={tweet_id} isComment placeholder={'Tweet your reply'} type={fetchedTweet?.result?.type} />
+            <TweetItem data={fetchedTweet?.result} isReturn />
+            <Form postId={tweet_id} tweet_type={2} placeholder={'Tweet your reply'} type={fetchedTweet?.result?.type} />
             <CommentFeed comments={fetchedTweetDetail?.result?.tweet} />
         </div>
     );

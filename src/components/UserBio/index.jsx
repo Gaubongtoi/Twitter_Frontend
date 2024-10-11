@@ -45,15 +45,6 @@ function UserBio({ user_id }) {
             });
             toast.success(`${res.data.message}`, {
                 id: loadingToast,
-                style: {
-                    border: '1px solid #1E82BF',
-                    padding: '16px',
-                    color: '#1E82BF',
-                },
-                iconTheme: {
-                    primary: '#1E82BF',
-                    secondary: '#FFFAEE',
-                },
             });
             // setBody('');
             mutatedUser();
@@ -74,15 +65,6 @@ function UserBio({ user_id }) {
             const res = await http.delete(`/api/user/follow/${fetchedUser?.result?._id}`);
             toast.success(`${res.data.message}`, {
                 id: loadingToast,
-                style: {
-                    border: '1px solid #1E82BF',
-                    padding: '16px',
-                    color: '#1E82BF',
-                },
-                iconTheme: {
-                    primary: '#1E82BF',
-                    secondary: '#FFFAEE',
-                },
             });
             // setBody('');
             mutatedUser();

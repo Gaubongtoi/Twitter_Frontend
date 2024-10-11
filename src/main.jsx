@@ -7,7 +7,7 @@ import { Toaster } from 'react-hot-toast';
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
-        <Toaster position="top-right" reverseOrder={true} />
+        <Toaster position="top-center" reverseOrder={true} />
 
         {/* <Modal actionLabel="Submit" isOpen title="Test modal"></Modal> */}
         <App />
