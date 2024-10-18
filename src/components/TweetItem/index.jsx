@@ -10,7 +10,7 @@ import { ImLoop } from 'react-icons/im';
 import { PiPencilSimpleLineFill } from 'react-icons/pi';
 import { FaRegBookmark, FaBookmark } from 'react-icons/fa6';
 // Hook
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import useLike from '../../hooks/auth/useLike';
 import useLoginNoti from '../../hooks/modal/useLoginNoti';
 import useCurrentUser from '../../hooks/auth/useCurrentUser';
@@ -29,14 +29,12 @@ import Avatar from '../Avatar';
 import { Wrapper as PopperWrapper } from '../Popper';
 import ImageGallary from '../ImageGallary';
 import useBookmark from '../../hooks/auth/useBookmark';
+import HighlightedText from '../HighlightedText';
 function TweetItem({ user_id, data, isReturn, type, quote = false }) {
     const { data: currentUser } = useCurrentUser();
-    console.log(data);
-
     // Auth
     const { hasLiked, toggleLike } = useLike({ tweetId: data?._id, userId: user_id });
     const { hasBookmarked, toggleBookmark } = useBookmark({ tweetId: data?._id, userId: user_id });
-
     const { hasRetweet, toggleRetweet } = useRetweet({ tweetId: data?._id, userId: user_id });
     const [isLoading, setIsLoading] = useState(false);
     const { mutate: mutateTweets } = useTweets();
@@ -82,12 +80,17 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
     const onLike = useCallback(
         (e) => {
             e.stopPropagation();
+
             if (!currentUser) {
                 return loginModal.onOpen();
             }
+            if (quote) {
+                quoteModal.onClose();
+            }
             toggleLike();
         },
-        [loginModal, currentUser, toggleLike],
+
+        [loginModal, currentUser, toggleLike, quote, quoteModal],
     );
     const onBookmark = useCallback(
         (e) => {
@@ -95,9 +98,12 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
             if (!currentUser) {
                 return loginModal.onOpen();
             }
+            if (quote) {
+                quoteModal.onClose();
+            }
             toggleBookmark();
         },
-        [loginModal, currentUser, toggleBookmark],
+        [loginModal, currentUser, toggleBookmark, quote, quoteModal],
     );
     const onDelete = useCallback(
         async (e) => {
@@ -152,6 +158,14 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
         );
         return formattedNumber;
     }, [data?.guest_views, data?.user_views]);
+    const transformInput = useMemo(() => {
+        return (input) => {
+            // Thay thế định dạng #[...] và @[...]
+            return input
+                .replace(/#\[(.*?)\]\((.*?)\)/g, '#$1') // Thay thế #[Name](id)
+                .replace(/@\[(.*?)\]\((.*?)\)/g, '@$1'); // Thay thế @[Name](id)
+        };
+    }, []);
     const LikeIcon = hasLiked ? AiFillHeart : AiOutlineHeart;
     const BookmarkIcon = hasBookmarked ? FaBookmark : FaRegBookmark;
 
@@ -206,8 +220,9 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
                             <span className="text-neutral-500 text-sm">{created_at}</span>
                         </div>
                         <div className="mt-1">
-                            <p>{data?.content}</p>{' '}
-                            {data?.hashtags.length > 0 &&
+                            {/* <p>{transformInput(data?.content)}</p>{' '} */}
+                            <HighlightedText input={data?.content} mentions={data?.mentions} data={data} />
+                            {/* {data?.hashtags.length > 0 &&
                                 data?.hashtags.map((hashtag, key) => (
                                     <p
                                         className="inline-block text-[#1da1f2] font-semibold text-sm px-1 py-1 hover:underline cursor-pointer transition-colors duration-200"
@@ -215,7 +230,7 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
                                     >
                                         #{hashtag.name}
                                     </p>
-                                ))}
+                                ))} */}
                         </div>
                         {type === 3 && <QuoteItem data={quoteFetched?.result} />}
                         <div>{data?.medias.length > 0 && !quote && <ImageGallary images={data?.medias} />}</div>
@@ -368,7 +383,7 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
     );
 }
 
-export default TweetItem;
+export default memo(TweetItem);
 
 function RetweetItem({ tweet_id, user_id, currentUser, quoteModal, onLike }) {
     const { hasLiked, toggleLike } = useLike({ tweetId: tweet_id, userId: user_id });
@@ -425,8 +440,12 @@ function RetweetItem({ tweet_id, user_id, currentUser, quoteModal, onLike }) {
                     <span className="text-neutral-500 text-sm">{created_at}</span>
                 </div>
                 <div className="mt-1">
-                    <p>{fetchedTweetDetail?.result.content}</p>{' '}
-                    {fetchedTweetDetail?.result.hashtags.length > 0 &&
+                    <HighlightedText
+                        input={fetchedTweetDetail?.result.content}
+                        mentions={fetchedTweetDetail?.result?.mentions}
+                        data={fetchedTweetDetail?.result}
+                    />
+                    {/* {fetchedTweetDetail?.result.hashtags.length > 0 &&
                         fetchedTweetDetail?.result.hashtags.map((hashtag, key) => (
                             <p
                                 className="inline-block text-[#1da1f2] font-semibold text-sm px-1 py-1 hover:underline cursor-pointer transition-colors duration-200"
@@ -434,7 +453,7 @@ function RetweetItem({ tweet_id, user_id, currentUser, quoteModal, onLike }) {
                             >
                                 #{hashtag.name}
                             </p>
-                        ))}
+                        ))} */}
                 </div>
                 <div>
                     {fetchedTweetDetail?.result?.medias.length > 0 && (
@@ -538,9 +557,6 @@ function RetweetItem({ tweet_id, user_id, currentUser, quoteModal, onLike }) {
 }
 
 function QuoteItem({ data }) {
-    // const { data: fetchedTweetDetail, mutate: mutateTweetQuote } = useTweetDetail(tweet_id);
-    console.log('Chilllllllll: ', data);
-
     const [parentTweetUrl, setParentTweetUrl] = useState('');
     const navigate = useNavigate();
     const created_at = useMemo(() => {

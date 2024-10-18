@@ -60,7 +60,7 @@ function Modal({ isOpen, onClose, title, body, footer, disabled, redirect, href,
                             </div>
                         )}
                         {/* Body */}
-                        <div className={`relative px-10 ${!title && 'py-6'} flex-auto`}>{body}</div>
+                        <div className={`relative px-6 ${!title && 'py-6'} flex-auto`}>{body}</div>
                         {/* Footer */}
 
                         {footer && <div className="flex flex-col gap-2 p-10">{footer}</div>}

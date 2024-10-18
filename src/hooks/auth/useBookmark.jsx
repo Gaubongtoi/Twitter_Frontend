@@ -46,7 +46,16 @@ const useBookmark = ({ tweetId, userId }) => {
 
             toast.error('Bookmark Error');
         }
-    }, [currentUser, hasBookmarked, loginModal, mutateFetchedTweet, mutateFetchedTweets, tweetId, mutateFetchedFeed]);
+    }, [
+        currentUser,
+        hasBookmarked,
+        loginModal,
+        mutateFetchedTweet,
+        mutateFetchedTweets,
+        tweetId,
+        mutateFetchedFeed,
+        mutateFetchedBookmark,
+    ]);
     return {
         hasBookmarked,
         toggleBookmark,

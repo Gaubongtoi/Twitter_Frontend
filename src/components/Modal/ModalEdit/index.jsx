@@ -84,37 +84,82 @@ function ModalEdit() {
         try {
             setIsLoading(true);
             await delay(import.meta.env.VITE_DELAY_REQUEST);
-
-            const [avatarRes, coverPhotoRes] = await Promise.all([
-                http.post('/api/medias/upload-image', formdata_avatar, {
+            if (profileImage !== '' && coverImage !== '') {
+                const [avatarRes, coverPhotoRes] = await Promise.all([
+                    http.post('/api/medias/upload-image', formdata_avatar, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    }),
+                    http.post('/api/medias/upload-image', formdata_cover_photo, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    }),
+                ]);
+                const res = await http.patch(`/api/user/me`, {
+                    ...dataPatch,
+                    date_of_birth: data.date_of_birth === null ? '' : dateToISOString(data.date_of_birth),
+                    avatar: avatarRes.data.result[0].cloudinary_url,
+                    cover_photo: coverPhotoRes.data.result[0].cloudinary_url,
+                });
+                mutateFetchedUser();
+                toast.success(`${res.data.message}`, {
+                    id: loadingToast,
+                });
+                editModal.onClose();
+            } else if (profileImage !== '' && coverImage === '') {
+                const avatarRes = await http.post('/api/medias/upload-image', formdata_avatar, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
-                }),
-                http.post('/api/medias/upload-image', formdata_cover_photo, {
+                });
+                const res = await http.patch(`/api/user/me`, {
+                    ...dataPatch,
+                    date_of_birth: data.date_of_birth === null ? '' : dateToISOString(data.date_of_birth),
+                    avatar: avatarRes.data.result[0].cloudinary_url,
+                });
+                mutateFetchedUser();
+                toast.success(`${res.data.message}`, {
+                    id: loadingToast,
+                });
+                editModal.onClose();
+            } else if (profileImage === '' && coverImage !== '') {
+                const coverPhotoRes = await http.post('/api/medias/upload-image', formdata_cover_photo, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
-                }),
-            ]);
-            const res = await http.patch(`/api/user/me`, {
-                ...dataPatch,
-                date_of_birth: data.date_of_birth === null ? '' : dateToISOString(data.date_of_birth),
-                avatar: avatarRes.data.result[0].cloudinary_url,
-                cover_photo: coverPhotoRes.data.result[0].cloudinary_url,
-            });
-            mutateFetchedUser();
-            toast.success(`${res.data.message}`, {
-                id: loadingToast,
-            });
-            editModal.onClose();
+                });
+                const res = await http.patch(`/api/user/me`, {
+                    ...dataPatch,
+                    date_of_birth: data.date_of_birth === null ? '' : dateToISOString(data.date_of_birth),
+                    cover_photo: coverPhotoRes.data.result[0].cloudinary_url,
+                });
+                mutateFetchedUser();
+                toast.success(`${res.data.message}`, {
+                    id: loadingToast,
+                });
+                editModal.onClose();
+            } else {
+                const res = await http.patch(`/api/user/me`, {
+                    ...dataPatch,
+                    date_of_birth: data.date_of_birth === null ? '' : dateToISOString(data.date_of_birth),
+                });
+                mutateFetchedUser();
+                toast.success(`${res.data.message}`, {
+                    id: loadingToast,
+                });
+                editModal.onClose();
+            }
         } catch (error) {
             // Xử lý lỗi nếu có
             console.log(error);
-            toast.error('Something went wrong!');
+            toast.error(`Something went wrong!`, {
+                id: loadingToast,
+            });
         } finally {
             setIsLoading(false);
-            toast.dismiss(loadingToast);
+            // toast.dismiss(loadingToast);
         }
     };
     const bodyContent = (

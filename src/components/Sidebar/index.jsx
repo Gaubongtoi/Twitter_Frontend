@@ -5,24 +5,30 @@ import SidebarLogo from '../SidebarLogo';
 import SidebarItem from '../SidebarItem';
 import Button from '../Button';
 import useCurrentUser from '../../hooks/auth/useCurrentUser';
+import images from '../../assets/images';
+import useTagBar from '../../hooks/state/useTagBar';
+import { useNavigate } from 'react-router-dom';
 
 function Sidebar() {
     // const { data: currentUser } = useCurrentUser();
     // console.log(currentUser);
+    const tagBarSelection = useTagBar();
+    const tagBarState = useTagBar.getState();
+    const navigate = useNavigate();
     const items = [
-        { label: 'Home', href: '/', icon: <PiHouseBold size={26}></PiHouseBold>, auth: true },
-        { label: 'Notification', href: '/notification', icon: <FaRegBell size={26}></FaRegBell>, auth: true },
-        { label: 'Profile', href: '/api/user/me', icon: <FaRegUser size={26}></FaRegUser>, auth: true },
+        { label: 'Home', href: '/', icon: PiHouseBold, auth: true },
+        { label: 'Notification', href: '/notification', icon: FaRegBell, auth: true },
+        { label: 'Profile', href: '/api/user/me', icon: FaRegUser, auth: true },
         {
             label: 'Bookmark',
             href: '/api/bookmarks',
-            icon: <FaRegBookmark size={26}></FaRegBookmark>,
+            icon: FaRegBookmark,
             auth: true,
         },
         {
             label: 'Messages',
             href: '/api/user/message',
-            icon: <MdMailOutline size={26}></MdMailOutline>,
+            icon: MdMailOutline,
             auth: true,
         },
     ];
@@ -31,22 +37,40 @@ function Sidebar() {
             <div className="col-span-1 h-full pr-4 md:pr-6">
                 <div className="flex flex-col items-end">
                     <div className="space-y-2 lg:w-[230px]">
-                        <SidebarLogo></SidebarLogo>
+                        <SidebarLogo />
                         {items.map((item, i) => {
                             return (
                                 <SidebarItem
                                     key={item.href}
-                                    href={item.href}
+                                    // href={item.href}
                                     label={item.label}
                                     icon={item.icon}
                                     auth={item.auth}
-                                ></SidebarItem>
+                                    active={tagBarState.tag}
+                                    onClick={() => {
+                                        tagBarSelection.setTag(item.label);
+                                        navigate(item.href);
+                                    }}
+                                />
                             );
                         })}
-                        <div className="w-full h-auto mt-4">
-                            <Button primary rounded>
-                                Post
-                            </Button>
+
+                        <div className="w-full h-auto mt-2">
+                            <div className="relative rounded-full w-full flex items-center hover:bg-opacity-10 justify-center cursor-pointer lg:hidden">
+                                <div className="w-[80px] h-auto">
+                                    <img
+                                        src={images.tweet_post}
+                                        alt=""
+                                        className="object-cover w-full h-auto hover:scale-110"
+                                    />
+                                </div>
+                            </div>
+                            <div className="relative hidden lg:flex items-center gap-4 rounded-full hover:bg-[#696a6b] hover:bg-opacity-10 cursor-pointer">
+                                <Button primary rounded>
+                                    Post
+                                </Button>
+                                {/* <p className="hidden lg:block text-black text-xl font-semibold">{label}</p> */}
+                            </div>
                         </div>
                     </div>
                 </div>

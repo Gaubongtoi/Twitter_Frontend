@@ -1,0 +1,95 @@
+/* ./src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.mentions {
+    max-width: 100%;
+    word-wrap: break-word;
+    white-space: normal;
+    margin-bottom: 40px;
+}
+
+.mentions--singleLine .mentions__control {
+    display: inline-block;
+}
+.mentions--singleLine .mentions__higlighter {
+    /* padding: 1px; */
+    border: 2px inset transparent;
+}
+.mentions--singleLine .mentions__input {
+    border: 2px inset;
+    /* resize: none; */
+}
+
+.mentions--multiLine .mentions__control {
+    font-family: inherit;
+    font-size: 20px;
+    /* border: 1px solid silver; */
+}
+.mentions--multiLine .mentions__highlighter {
+    /* height: 100px; */
+    /* padding: 9px; */
+}
+.mentions--multiLine .mentions__input {
+    min-height: 63px;
+    outline: 0;
+    border: 0;
+    width: 90%;
+    font-size: 32px;
+}
+
+.mentions__suggestions {
+    top: 20px !important;
+    max-height: 200px; /* Giới hạn chiều cao */
+    max-width: 874px;
+    min-width: 320px !important;
+    z-index: 100;
+    /* border-left-radius: 12px;
+    border-right-radius: 12px; */
+    border: 10px;
+    /* overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 100 !important; */
+}
+
+.mentions__suggestions__list {
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 12px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    max-height: 160px;
+    overflow-y: auto;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    display: flex;
+    flex-direction: column;
+}
+
+.mentions__suggestions__item {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.mentions__suggestions__item:last-child {
+    /* padding: 5px 15px; */
+    border-bottom-left-radius: 10px;
+}
+
+.mentions__suggestions__item:first-child {
+    /* padding: 5px 15px; */
+    border-top-left-radius: 10px;
+}
+
+.mentions__suggestions__item--focused {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.mentions__mention {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.mentions__suggestions__item__display {
+    font-weight: 600;
+    font-size: 15px;
+}

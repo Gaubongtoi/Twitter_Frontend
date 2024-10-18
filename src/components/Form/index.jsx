@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import useCurrentUser from '../../hooks/auth/useCurrentUser';
 import useTweets from '../../hooks/auth/useTweets';
 import Button from '../Button';
@@ -19,7 +19,10 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // optional
+import './index.css';
 import useQuote from '../../hooks/modal/useQuote';
+import { Mention, MentionsInput } from 'react-mentions';
+
 function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user_id }) {
     const { data: currentUser } = useCurrentUser();
     const { mutate: mutateTweets } = useTweets();
@@ -29,7 +32,12 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
     const [isLoading, setIsLoading] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [showEmoji, setShowEmoji] = useState(false);
+    // const [inputValue, setInputValue] = useState('');
+    const [mentions, setMentions] = useState([]);
+    const [hashtags, setHashtags] = useState([]);
+
     const [currentIndex, setCurrentIndex] = useState(selectedFiles.length > 2 ? selectedFiles.length - 2 : 0);
+    const [body, setBody] = useState('');
     const quoteModal = useQuote();
     // Hàm để điều chỉnh nút điều hướng lùi
     const handlePrev = () => {
@@ -45,7 +53,6 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
         }
     };
 
-    const [body, setBody] = useState('');
     const navigate = useNavigate();
     const addImageToPost = useCallback((e) => {
         try {
@@ -88,8 +95,8 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
                         audience: 0,
                         content: body,
                         parent_id: postId,
-                        hashtags: [],
-                        mentions: [],
+                        hashtags: hashtags,
+                        mentions: mentions,
                         medias: mediaPost,
                     });
                 } else {
@@ -99,8 +106,8 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
                         audience: 0,
                         content: body,
                         parent_id: null,
-                        hashtags: [],
-                        mentions: [],
+                        hashtags: hashtags,
+                        mentions: mentions,
                         medias: mediaPost,
                     });
                 }
@@ -111,8 +118,8 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
                         audience: 0,
                         content: body,
                         parent_id: postId,
-                        hashtags: [],
-                        mentions: [],
+                        hashtags: hashtags,
+                        mentions: mentions,
                         medias: [],
                     });
                 } else {
@@ -122,8 +129,8 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
                         audience: 0,
                         content: body,
                         parent_id: null,
-                        hashtags: [],
-                        mentions: [],
+                        hashtags: hashtags,
+                        mentions: mentions,
                         medias: [],
                     });
                 }
@@ -134,6 +141,8 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
             });
             quoteModal.onClose();
             setBody('');
+            setHashtags([]);
+            setMentions([]);
             setSelectedFiles([]);
             mutateTweets();
             mutateTweetChildren();
@@ -149,12 +158,80 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
         mutateTweets,
         mutateTweetChildren,
         mutateTweetDetail,
+        quoteModal,
         postId,
         tweet_type,
         onClose,
         mutateTweetsOfMe,
         selectedFiles,
+        hashtags,
+        mentions,
     ]);
+    async function asyncMentions(query, callback) {
+        if (!query) return;
+        http.get(`/api/search/mentions?q=${query}&page=1&limit=5`)
+            .then((res) => {
+                if (res.data.result.users.length) {
+                    // const suggestion = { id: query, display: query };
+                    const tagsArray = res.data.result.users.map((user) => ({
+                        id: user._id,
+                        display: user.username,
+                        name: user.name,
+                    }));
+                    return [...tagsArray];
+                } else {
+                    return [];
+                }
+            })
+            .then(callback);
+    }
+    async function asyncTags(query, callback) {
+        if (!query) return;
+
+        http.get(`/api/search/hashtags?q=${query}&page=1&limit=5`)
+            .then((res) => {
+                if (res.data.result.hashtags.length) {
+                    const tagsArray = res.data.result.hashtags.map((tag) => ({
+                        id: tag._id,
+                        display: tag.name,
+                    }));
+                    return [...tagsArray];
+                } else {
+                    return [{ id: query, display: query }];
+                }
+            })
+            .then(callback);
+    }
+
+    const handleInputChange = useCallback(async (e) => {
+        const value = e.target.value;
+        setBody(value);
+        const mentionMatches = value.match(/@\[(.*?)\]\((.*?)\)/g); // Lấy tất cả các mention
+        const hashtagMatches = value.match(/#\[(.*?)\]\((.*?)\)/g); // Lấy tất cả các mention
+        // Nếu có gợi ý, lưu trữ chúng
+        if (mentionMatches) {
+            const currentMentions = mentionMatches
+                .map((mention) => {
+                    const match = mention.match(/@\[(.*?)\]\((.*?)\)/);
+                    return match ? match[2] : null; // Trả về đối tượng { name, id }
+                })
+                .filter(Boolean); // Lọc bỏ giá trị null
+            setMentions(currentMentions); // Cập nhật mảng mentions
+        } else {
+            setMentions([]); // Nếu không có gợi ý, xóa mảng mentions
+        }
+        if (hashtagMatches) {
+            const currentHashtags = hashtagMatches
+                .map((mention) => {
+                    const match = mention.match(/#\[(.*?)\]\((.*?)\)/);
+                    return match ? match[1] : null; // Trả về đối tượng { name, id }
+                })
+                .filter(Boolean); // Lọc bỏ giá trị null
+            setHashtags(currentHashtags); // Cập nhật mảng mentions
+        } else {
+            setHashtags([]); // Nếu không có gợi ý, xóa mảng mentions
+        }
+    }, []);
     return (
         <div className={isBBorder ? 'border-b-[1px] border-neutral-800 px-3 py-2 relative' : 'px-3 py-2 relative'}>
             {currentUser ? (
@@ -163,48 +240,65 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
                         <div>
                             <Avatar userId={currentUser?.result?._id} />
                         </div>
-                        <div className="w-full">
-                            <textarea
-                                disabled={isLoading}
-                                onChange={(e) => setBody(e.target.value)}
-                                value={body}
-                                className="disabled:opacity-80 peer resize-zone mt-2 w-full ring-0 outline-none text-[20px] placeholder-neutral-500"
-                                placeholder={placeholder}
-                            ></textarea>
-
+                        <div className="w-full max-w-full overflow-visible">
+                            <div className="description outline-none">
+                                <MentionsInput
+                                    disabled={isLoading}
+                                    className="mentions"
+                                    spellCheck="false"
+                                    onChange={handleInputChange}
+                                    value={body}
+                                    placeholder={placeholder}
+                                    // forceSuggestionsAboveCursor={true}
+                                >
+                                    {/* Mentions */}
+                                    <Mention
+                                        trigger="@"
+                                        data={asyncMentions}
+                                        markup="@[__display__](__id__)"
+                                        style={{
+                                            backgroundColor: '#daf4fa',
+                                        }}
+                                        appendSpaceOnAdd={true}
+                                        displayTransform={(id, display) => {
+                                            return `@${display}`;
+                                        }}
+                                        renderSuggestion={(suggestion, search, highlightedDisplay) => {
+                                            return (
+                                                <div className="flex gap-3 w-full items-center">
+                                                    <div className="w-1/6">
+                                                        <Avatar userId={suggestion.id} />
+                                                    </div>
+                                                    <div className="grow h-full w-full">
+                                                        {/* {highlightedDisplay} */}
+                                                        <p className="font-semibold w-full text-[14px]">
+                                                            {suggestion.name}
+                                                        </p>
+                                                        <p className="text-dark_6">@{suggestion.display}</p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }}
+                                    />
+                                    {/* Hashtags */}
+                                    <Mention
+                                        trigger="#"
+                                        data={asyncTags}
+                                        markup="#[__display__](__id__)"
+                                        style={{
+                                            backgroundColor: '#daf4fa',
+                                        }}
+                                        appendSpaceOnAdd={true}
+                                        displayTransform={(id, display) => {
+                                            return `#${display}`;
+                                        }}
+                                        renderSuggestion={(suggestion, search, highlightedDisplay) => (
+                                            <div>#{highlightedDisplay}</div>
+                                        )}
+                                    />
+                                </MentionsInput>
+                            </div>
                             <hr className="opacity-0 peer-focus:opacity-100 h-[1px] w-full border-neutral-800 transition" />
-                            {/* <div className="flex gap-8">
-                                {Boolean(selectedFiles.length) &&
-                                    selectedFiles.map((item, index) => (
-                                        <div
-                                            className={`${
-                                                selectedFiles.length === 1
-                                                    ? 'w-full'
-                                                    : `w-1/${selectedFiles.length} h-[200px]`
-                                            } relative rounded-3xl`}
-                                            key={index}
-                                        >
-                                            <button
-                                                onClick={() => {
-                                                    URL.revokeObjectURL(selectedFiles[index]);
-                                                    setSelectedFiles((e) => {
-                                                        let arr = [...e];
-                                                        return arr.filter((item2, index2) => {
-                                                            return index2 !== index;
-                                                        });
-                                                    });
-                                                }}
-                                                className="absolute right-[12px] px-[11px] py-[3px] bg-slate-600 rounded-full top-[12px] text-white"
-                                            >
-                                                X
-                                            </button>
-                                            <img
-                                                src={item.preview}
-                                                className="object-cover w-full h-full rounded-3xl"
-                                            />
-                                        </div>
-                                    ))}
-                            </div> */}
                             <div className="relative flex items-center">
                                 {/* Nút điều hướng trái */}
                                 {selectedFiles.length > 2 && (

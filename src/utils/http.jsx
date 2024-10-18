@@ -31,7 +31,11 @@ class Http {
             // Like
             'api/likes',
             // Bookmarks
-            'api/bookmarks',
+            '/api/bookmarks',
+            // Search
+            `/api/search/mentions`,
+            `/api/search/hashtags`,
+
             // 'api/likes/tweets',
 
             //
