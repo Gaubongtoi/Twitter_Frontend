@@ -9,6 +9,7 @@ import useEditModal from '../../hooks/modal/useEditModal';
 import toast from 'react-hot-toast';
 import http from '../../utils/http';
 import useUsersRecommendation from '../../hooks/auth/useUsersRecommendation';
+import { IoIosLink } from 'react-icons/io';
 
 function UserBio({ user_id }) {
     const { data: fetchedUser, mutate: mutatedUser } = useUser(user_id);
@@ -22,10 +23,10 @@ function UserBio({ user_id }) {
         }
         return format(new Date(fetchedUser?.result?.create_at), 'MMMM yyyy');
     }, [fetchedUser?.result?.create_at]);
-    // console.log(fetchedUser);
-
-    // console.log(fetchedUser?.result?.followingUsers);
-    // console.log(currentUser?.result?._id);
+    const format_follow_amount = useCallback((input) => {
+        const formattedNumber = new Intl.NumberFormat('en', { notation: 'compact' }).format(input);
+        return formattedNumber;
+    }, []);
 
     const isFollowed = useMemo(() => {
         return fetchedUser?.result?.followedUsers.every((follower) => {
@@ -43,6 +44,12 @@ function UserBio({ user_id }) {
             const res = await http.post('/api/user/follow', {
                 followed_user_id: fetchedUser?.result?._id,
             });
+            // Follow
+            await http.post('/api/notifications', {
+                tweet_id: null,
+                receiver_id: fetchedUser?.result?._id,
+                type: 0,
+            });
             toast.success(`${res.data.message}`, {
                 id: loadingToast,
             });
@@ -51,7 +58,9 @@ function UserBio({ user_id }) {
             mutatedCurrentUser();
             mutatedRecommend();
         } catch (error) {
-            toast.error('Something went wrong!');
+            toast.error(`${error.response.data.message}`, {
+                id: loadingToast,
+            });
         } finally {
             setIsLoading(false);
         }
@@ -71,7 +80,9 @@ function UserBio({ user_id }) {
             mutatedCurrentUser();
             mutatedRecommend();
         } catch (error) {
-            toast.error('Something went wrong!');
+            toast.error(`${error.response.data.message}`, {
+                id: loadingToast,
+            });
         } finally {
             setIsLoading(false);
         }
@@ -96,19 +107,34 @@ function UserBio({ user_id }) {
                     </p>
                 </div>
                 <div className="flex flex-col mt-4">
-                    <p>{fetchedUser?.result?.bio ? fetchedUser?.result?.bio : 'User has not updated their bio'}</p>
-                    <div className="flex flex-row items-center gap-2 mt-4 text-neutral-500">
-                        <BiCalendar size={24} />
-                        <p>Joined {created_at}</p>
+                    <p className="whitespace-pre-wrap text-sm">
+                        {fetchedUser?.result?.bio ? fetchedUser?.result?.bio : 'User has not updated their bio'}
+                    </p>
+                    <div className="flex gap-4 text-sm mt-4 items-center">
+                        <div className="flex flex-row items-center gap-2 text-neutral-500">
+                            <BiCalendar size={24} />
+                            <p className="whitespace-pre-wrap">Joined {created_at}</p>
+                        </div>
+                        {fetchedUser?.result?.website && (
+                            <div className="flex flex-row items-center gap-2 text-neutral-500">
+                                <IoIosLink size={24} />
+                                <a
+                                    className="text-[#1da1f2] font-semibold text-sm leading-5 overflow-hidden text-ellipsis whitespace-nowrap w-[200px]"
+                                    href={`${fetchedUser?.result?.website}`}
+                                >
+                                    {fetchedUser?.result?.website}
+                                </a>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="flex flex-row items-center mt-4 gap-6">
                     <div className="flex flex-row items-center gap-1">
-                        <p className="">{fetchedUser?.result?.followingUsers.length}</p>
+                        <p className="">{format_follow_amount(fetchedUser?.result?.followingUsers.length)}</p>
                         <p className="text-neutral-500">Following</p>
                     </div>
                     <div className="flex flex-row items-center gap-1">
-                        <p className="">{fetchedUser?.result?.followedUsers.length}</p>
+                        <p className="">{format_follow_amount(fetchedUser?.result?.followedUsers.length)}</p>
                         <p className="text-neutral-500">Followers</p>
                     </div>
                 </div>

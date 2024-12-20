@@ -1,11 +1,11 @@
-import CommentItem from '../CommentItem';
+import useTweetDetail from '../../hooks/auth/useTweetDetail';
+import TweetItem from '../TweetItem';
 
-function CommentFeed({ comments }) {
+function CommentFeed({ tweet_id }) {
+    const { data: fetchedTweet } = useTweetDetail(tweet_id);
     return (
         <>
-            {comments?.map((comment) => (
-                <CommentItem key={comment._id} data={comment} />
-            ))}
+            <TweetItem data={fetchedTweet?.result} user_id={fetchedTweet?.result?.user_id} />
         </>
     );
 }

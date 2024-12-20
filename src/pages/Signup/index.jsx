@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import http from '../../utils/http';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 function Signup() {
     const navigate = useNavigate();
     const schema = yup
@@ -34,32 +35,43 @@ function Signup() {
                 .min(new Date(1900, 0, 1), 'Date of birth cannot be before January 1, 1900'),
         })
         .required();
+
     const {
         register,
         handleSubmit,
+        reset, // Sử dụng reset để làm sạch form
         formState: { errors },
     } = useForm({
         defaultValues: {
-            // userName: '',
-            // email: '',
-            // phoneNumber: '',
+            name: '',
+            email: '',
+            password: '',
+            confirm_password: '',
+            date_of_birth: '',
         },
         resolver: yupResolver(schema),
     });
+
     const handleLogin = async (data) => {
-        // Fix a date reduce when reverse ISOString
         const localDateISOString = new Date(
             data.date_of_birth.getTime() - data.date_of_birth.getTimezoneOffset() * 60000,
         ).toISOString();
+
         let dataBody = {
             ...data,
             date_of_birth: localDateISOString,
         };
+
         try {
             let response = await http.post(`/api/user/register`, dataBody);
-            // console.log(response);
+            console.log(response);
+            reset();
+            toast.success('Register Successfully!');
+            setTimeout(() => {
+                navigate('/signin');
+            }, [1000]);
         } catch (error) {
-            // console.log(error.response.data);
+            console.error(error.response.data);
         }
     };
     return (

@@ -35,9 +35,12 @@ class Http {
             // Search
             `/api/search/mentions`,
             `/api/search/hashtags`,
-
-            // 'api/likes/tweets',
-
+            // Conversation
+            `/api/message`,
+            // Notifications
+            `/api/notifications`,
+            //
+            `/api/search`,
             //
             '/api/orders',
             '/api/cart',

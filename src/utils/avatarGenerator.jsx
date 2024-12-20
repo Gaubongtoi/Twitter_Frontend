@@ -9,7 +9,7 @@ import {
 } from '@dicebear/collection';
 
 export const generateAvatarUrl = (seed) => {
-    const avatar = createAvatar(openPeeps, {
+    const avatar = createAvatar(avataaars, {
         seed,
         width: 128,
         height: 128,

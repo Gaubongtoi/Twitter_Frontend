@@ -6,24 +6,13 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 
 function TweetFeed({ user_id }) {
     const { tweets, isLoading, size, setSize, totalPage, hasMore } = useTweets(user_id);
-    console.log(tweets);
-
     const loadMoreTweets = () => {
         if (size < totalPage) {
-            console.log('Loading more tweets...'); // In ra thông báo đang tải thêm tweet
             setTimeout(() => {
                 setSize(size + 1);
             }, 3000);
         }
     };
-
-    // useEffect(() => {
-    //     if (tweets) {
-    //         setAllPosts((prev) => [...prev, ...tweets]);
-    //     }
-    // }, [tweets]);
-    // console.log(allPosts);
-
     return (
         <div>
             <InfiniteScroll

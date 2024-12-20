@@ -7,12 +7,14 @@ import { useCallback, useMemo } from 'react';
 import useLoginNoti from '../modal/useLoginNoti';
 import http from '../../utils/http';
 import toast from 'react-hot-toast';
+import useSearchExplore from './useSearchExplore';
 
-const useRetweet = ({ tweetId, userId }) => {
+const useRetweet = ({ tweetId, userId, query }) => {
     const { data: currentUser } = useCurrentUser();
     const { data: fetchedTweet, mutate: mutateFetchedTweet } = useTweetDetail(tweetId);
     const { mutate: mutateFetchedTweets } = useTweets(userId);
     const { mutate: mutateFetchedFeed } = useTweets();
+    const { mutate: mutateFetchedExplore } = useSearchExplore({ query });
     const loginModal = useLoginNoti();
     const hasRetweet = useMemo(() => {
         const list = fetchedTweet?.result?.retweets?.map((retweet) => retweet.user_id) || [];
@@ -32,11 +34,11 @@ const useRetweet = ({ tweetId, userId }) => {
                 mutateFetchedTweet();
                 mutateFetchedTweets();
                 mutateFetchedFeed();
+                mutateFetchedExplore();
                 toast.success(`${res.data.message}`, {
                     id: loadingToast,
                 });
             } catch (error) {
-                console.log(error);
                 toast.error('Error', {
                     id: loadingToast,
                 });
@@ -66,7 +68,16 @@ const useRetweet = ({ tweetId, userId }) => {
                 });
             }
         }
-    }, [currentUser, hasRetweet, loginModal, mutateFetchedTweet, mutateFetchedTweets, tweetId, mutateFetchedFeed]);
+    }, [
+        currentUser,
+        hasRetweet,
+        loginModal,
+        mutateFetchedTweet,
+        mutateFetchedTweets,
+        tweetId,
+        mutateFetchedFeed,
+        mutateFetchedExplore,
+    ]);
     return {
         hasRetweet,
         toggleRetweet,

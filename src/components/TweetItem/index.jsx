@@ -30,10 +30,13 @@ import { Wrapper as PopperWrapper } from '../Popper';
 import ImageGallary from '../ImageGallary';
 import useBookmark from '../../hooks/auth/useBookmark';
 import HighlightedText from '../HighlightedText';
-function TweetItem({ user_id, data, isReturn, type, quote = false }) {
+import useSearchExplore from '../../hooks/auth/useSearchExplore';
+
+function TweetItem({ user_id, data, isReturn, type, quote = false, query }) {
     const { data: currentUser } = useCurrentUser();
     // Auth
-    const { hasLiked, toggleLike } = useLike({ tweetId: data?._id, userId: user_id });
+    const { hasLiked, toggleLike } = useLike({ tweetId: data?._id, userId: user_id, query });
+    const { mutate: mutateExplore } = useSearchExplore({ query });
     const { hasBookmarked, toggleBookmark } = useBookmark({ tweetId: data?._id, userId: user_id });
     const { hasRetweet, toggleRetweet } = useRetweet({ tweetId: data?._id, userId: user_id });
     const [isLoading, setIsLoading] = useState(false);
@@ -87,6 +90,8 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
             if (quote) {
                 quoteModal.onClose();
             }
+            // console.log('Like ở đây!');
+
             toggleLike();
         },
 
@@ -125,6 +130,7 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
                 mutateTweetDetail();
                 mutateTweetsOfMe();
                 mutateQuoteDetail();
+                mutateExplore();
             } catch (error) {
                 toast.error(error.response.data.message, {
                     id: loadingToast,
@@ -142,6 +148,7 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
             navigate,
             mutateTweetsOfMe,
             mutateQuoteDetail,
+            mutateExplore,
         ],
     );
     // console.log(data);
@@ -158,14 +165,6 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
         );
         return formattedNumber;
     }, [data?.guest_views, data?.user_views]);
-    const transformInput = useMemo(() => {
-        return (input) => {
-            // Thay thế định dạng #[...] và @[...]
-            return input
-                .replace(/#\[(.*?)\]\((.*?)\)/g, '#$1') // Thay thế #[Name](id)
-                .replace(/@\[(.*?)\]\((.*?)\)/g, '@$1'); // Thay thế @[Name](id)
-        };
-    }, []);
     const LikeIcon = hasLiked ? AiFillHeart : AiOutlineHeart;
     const BookmarkIcon = hasBookmarked ? FaBookmark : FaRegBookmark;
 
@@ -198,8 +197,11 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
                     user_id={data?.user?._id}
                     created_at={created_at}
                     currentUser={currentUser}
+                    quote={quote}
                     quoteModal={quoteModal}
-                    onLike={onLike}
+                    loginModal={loginModal}
+                    query={query}
+                    // onLike={onLike}
                 />
             ) : (
                 <div className="flex flex-row items-start gap-3">
@@ -221,7 +223,7 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
                         </div>
                         <div className="mt-1">
                             {/* <p>{transformInput(data?.content)}</p>{' '} */}
-                            <HighlightedText input={data?.content} mentions={data?.mentions} data={data} />
+                            <HighlightedText input={data?.content} mentions={data?.mentions} />
                             {/* {data?.hashtags.length > 0 &&
                                 data?.hashtags.map((hashtag, key) => (
                                     <p
@@ -278,6 +280,7 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
                                                                     className="w-auto h-10 cursor-pointer flex items-center gap-3 rounded-t-lg p-2.5 hover:bg-[#e1dfda] font-bold"
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
+
                                                                         return toggleRetweet();
                                                                     }}
                                                                 >
@@ -289,8 +292,6 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
                                                                 className="w-auto h-10 cursor-pointer flex items-center gap-3 rounded-b-lg p-2.5 hover:bg-[#e1dfda] font-bold"
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    console.log('data: ', data);
-
                                                                     quoteModal.onOpen(data);
                                                                 }}
                                                             >
@@ -323,7 +324,7 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
                                         {<p>{data?.likes.length}</p>}
                                     </div>
                                 </Tippy>
-                                <div className="flex flex-row items-center text-neutral-500 gap-2 cursor-pointer hover:text-primary hover:font-semibold">
+                                <div className="hidden sm:flex sm:flex-row sm:items-center text-neutral-500 gap-2 cursor-pointer hover:text-primary hover:font-semibold">
                                     <AiOutlineBarChart size={20} />
                                     <p>{format_view}</p>
                                 </div>
@@ -385,9 +386,9 @@ function TweetItem({ user_id, data, isReturn, type, quote = false }) {
 
 export default memo(TweetItem);
 
-function RetweetItem({ tweet_id, user_id, currentUser, quoteModal, onLike }) {
+function RetweetItem({ tweet_id, user_id, currentUser, quoteModal, quote, loginModal, query }) {
     const { hasLiked, toggleLike } = useLike({ tweetId: tweet_id, userId: user_id });
-    const { hasRetweet, toggleRetweet } = useRetweet({ tweetId: tweet_id, userId: user_id });
+    const { hasRetweet, toggleRetweet } = useRetweet({ tweetId: tweet_id, userId: user_id, query });
     const { data: fetchedTweetDetail } = useTweetDetail(tweet_id);
     const navigate = useNavigate();
     const goToUser = useCallback(
@@ -404,6 +405,23 @@ function RetweetItem({ tweet_id, user_id, currentUser, quoteModal, onLike }) {
             }
         },
         [currentUser?.result._id, navigate, fetchedTweetDetail?.result?.user?._id, quoteModal],
+    );
+    const onLike = useCallback(
+        (e) => {
+            e.stopPropagation();
+
+            if (!currentUser) {
+                return loginModal.onOpen();
+            }
+            if (quote) {
+                quoteModal.onClose();
+            }
+            // console.log('Like ở đây!');
+
+            toggleLike();
+        },
+
+        [loginModal, currentUser, toggleLike, quote, quoteModal],
     );
     const created_at = useMemo(() => {
         if (!fetchedTweetDetail?.result?.created_at) {
@@ -441,6 +459,7 @@ function RetweetItem({ tweet_id, user_id, currentUser, quoteModal, onLike }) {
                 </div>
                 <div className="mt-1">
                     <HighlightedText
+                        expand={true}
                         input={fetchedTweetDetail?.result.content}
                         mentions={fetchedTweetDetail?.result?.mentions}
                         data={fetchedTweetDetail?.result}
@@ -597,7 +616,7 @@ function QuoteItem({ data }) {
     }, [data?._id, getInformationParentId]);
 
     return (
-        <div className="p-4 border-2 rounded-3xl border-gray-400 hover:bg-dark_7 mt-3" onClick={goToPost}>
+        <div className="p-3 sm:p-4 border rounded-3xl border-black hover:bg-dark_7 mt-3" onClick={goToPost}>
             {data ? (
                 <div className="flex flex-row items-start gap-3">
                     <div className="grow">
@@ -621,7 +640,7 @@ function QuoteItem({ data }) {
                         </div>
                         <div className="mt-1 flex items-center max-w-[300px] overflow-hidden text-ellipsis">
                             {/* Phần tử <p> và <span> cùng nằm trên 1 hàng */}
-                            <p className="truncate">
+                            <p className="truncate sm:w-[200px] w-12 sm:text-base text-sm">
                                 {data?.content}{' '}
                                 {/* {data?.parent_id !== null &&
                                 `x.com/${}/status/1844344941553791257`} */}

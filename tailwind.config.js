@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
-import flowbite from 'flowbite/plugin';
+// import flowbite from 'flowbite/plugin';
+import plugin from 'tailwindcss/plugin';
 export default {
     content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', './node_modules/tailwind-datepicker-react/dist/**/*.js'],
     theme: {
@@ -18,7 +19,32 @@ export default {
                 dark_7: '#EBEEF0',
                 dark_8: '#F7F9FA',
             },
+            boxShadow: {
+                custom: '0px 7px 29px 0px rgba(100, 100, 111, 0.2)', // Giá trị shadow tùy chỉnh
+            },
         },
     },
-    plugins: [],
+    variants: {
+        extend: {
+            display: ['group-hover'],
+        },
+    },
+    plugins: [
+        plugin(function ({ addUtilities }) {
+            addUtilities({
+                '.scrollbar-hide': {
+                    /* IE and Edge */
+                    '-ms-overflow-style': 'none',
+
+                    /* Firefox */
+                    'scrollbar-width': 'none',
+
+                    /* Safari and Chrome */
+                    '&::-webkit-scrollbar': {
+                        display: 'none',
+                    },
+                },
+            });
+        }),
+    ],
 };

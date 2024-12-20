@@ -7,7 +7,7 @@ function ButtonExpand({ label, secondary, fullWidth, large, onClick, disabled, o
                 fullWidth ? 'w-full' : 'w-fit'
             } ${secondary ? 'bg-black' : 'bg-primary'} ${secondary ? 'text-white' : 'text-white'} ${
                 secondary ? 'border-black' : 'border-primary'
-            } ${large ? 'px-5' : 'px-4'} ${large ? 'py-3' : 'py-2'}  ${outline ? 'bg-transparent' : ''}  ${
+            } ${large ? 'px-5' : 'px-3'} ${large ? 'py-3' : 'py-1'}  ${outline ? 'bg-transparent' : ''}  ${
                 outline ? 'border-white' : ''
             }  ${outline ? 'text-white' : ''}`}
         >

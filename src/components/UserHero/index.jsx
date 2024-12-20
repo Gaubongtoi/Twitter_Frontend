@@ -6,7 +6,7 @@ function UserHero({ user_id }) {
     // console.log(fetchedUser.result.cover_photo);
 
     return (
-        <div className="bg-blue-300 h-44 relative">
+        <div className="bg-blue-300 h-52 relative">
             {fetchedUser.result.cover_photo && (
                 <img className="object-cover w-full h-full" alt="Avatar" src={fetchedUser.result.cover_photo} />
             )}

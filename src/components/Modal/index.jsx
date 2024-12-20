@@ -48,7 +48,7 @@ function Modal({ isOpen, onClose, title, body, footer, disabled, redirect, href,
             >
                 <div
                     className={`relative ${
-                        large ? 'w-full h-full' : 'max-w-lg lg:w-3/6 lg:max-w-lg h-auto lg:h-auto'
+                        large ? 'w-full h-full' : 'max-w-lg sm:w-3/4 lg:w-3/6 lg:max-w-lg h-auto lg:h-auto'
                     } my-6 mx-auto bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none`}
                 >
                     {/* Content */}
@@ -78,7 +78,7 @@ function Modal({ isOpen, onClose, title, body, footer, disabled, redirect, href,
                     ) : (
                         <button
                             className={`p-1 ml-auto border-0 hover:opacity-70 transition absolute  ${
-                                remove_left ? 'top-3 left-3' : 'top-3 right-3'
+                                remove_left ? 'top-3 left-3' : 'top-10 right-3'
                             }`}
                             onClick={handleClose}
                         >

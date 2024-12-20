@@ -1,15 +1,5 @@
-import { useForm } from 'react-hook-form';
-import useCurrentUser from '../../../hooks/auth/useCurrentUser';
-import useEditModal from '../../../hooks/modal/useEditModal';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import http from '../../../utils/http';
-import toast from 'react-hot-toast';
+import { useState } from 'react';
 import Modal from '..';
-import { dateToISOString, getCurrentDate, ISOStringToDate } from '../../../utils/currentDate';
-import Button from '../../Button';
-import ImageUpload from '../../ImageUpload';
 import useQuote from '../../../hooks/modal/useQuote';
 import Form from '../../Form';
 import TweetItem from '../../TweetItem';
@@ -19,6 +9,7 @@ function ModalQuote() {
     const quoteModal = useQuote();
     const quoteState = useQuote.getState();
     // console.log(useQuote.getState().data?._id);
+    console.log(useQuote.getState().data);
 
     const bodyContent = (
         <div className="flex flex-col gap-4 p-2">
@@ -27,6 +18,7 @@ function ModalQuote() {
                 isBBorder={false}
                 placeholder="Your Quote Content"
                 postId={useQuote.getState().data?._id}
+                user_id={useQuote.getState().data?.user_id}
             />
             <div className="border-2 rounded-lg">
                 <TweetItem data={quoteState.data} quote />

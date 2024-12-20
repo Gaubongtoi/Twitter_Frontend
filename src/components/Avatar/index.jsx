@@ -3,7 +3,6 @@ import useUser from '../../hooks/auth/useUser';
 import { useNavigate } from 'react-router-dom';
 import { generateAvatarUrl } from '../../utils/avatarGenerator';
 import useCurrentUser from '../../hooks/auth/useCurrentUser';
-import ImageGallary from '../ImageGallary';
 
 function Avatar({ userId, isLarge, hasBorder = false }) {
     const navigate = useNavigate();
@@ -25,7 +24,7 @@ function Avatar({ userId, isLarge, hasBorder = false }) {
     const avatarUrl = fetcherData?.result?.avatar || generateAvatarUrl(userId);
     return (
         <div
-            className={`${hasBorder ? 'border-4 border-white' : 'border-2 border-gray-500'} ${
+            className={`${hasBorder ? 'border-4 border-white' : 'border-2 border-[#FEFCFF]'} ${
                 isLarge ? 'h-32' : 'h-12'
             } ${isLarge ? 'w-32' : 'w-12'} rounded-full hover:opacity-90 transition cursor-pointer relative`}
         >

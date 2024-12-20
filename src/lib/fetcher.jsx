@@ -35,6 +35,8 @@ const fetcher = async (url) => {
                     loginState.onOpen();
                     logout(); // Clear session when refresh token is invalid
                 } else {
+                    console.log('ALoooooooooooooooo');
+
                     // Any other 401-related error
                     toast.error('Unauthorized access. Please log in again.');
                     loginState.onOpen();

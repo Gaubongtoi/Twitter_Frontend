@@ -31,7 +31,7 @@ function ModalEdit() {
     const schema = yup
         .object()
         .shape({
-            name: yup.string().nullable(),
+            name: yup.string().required('This field is required!'),
             date_of_birth: yup
                 .date()
                 .nullable()
@@ -44,7 +44,7 @@ function ModalEdit() {
             bio: yup.string().nullable(),
             location: yup.string().nullable(),
             website: yup.string().nullable(),
-            username: yup.string().nullable(),
+            username: yup.string().required('This field is required!'),
         })
         .required();
     const {
@@ -153,13 +153,12 @@ function ModalEdit() {
             }
         } catch (error) {
             // Xử lý lỗi nếu có
-            console.log(error);
-            toast.error(`Something went wrong!`, {
+            toast.error(`${error.response.data.message}`, {
                 id: loadingToast,
             });
         } finally {
             setIsLoading(false);
-            // toast.dismiss(loadingToast);
+            toast.dismiss(loadingToast);
         }
     };
     const bodyContent = (
@@ -179,50 +178,65 @@ function ModalEdit() {
                 />
             </div>
             <div className="flex flex-row gap-6">
+                <div className="w-1/2">
+                    <p className="text-xs">Your name:</p>
+                    <input
+                        className="w-full text-black pb-[10px] mt-2 bg-transparent border-b border-black outline-none focus:outline-none"
+                        type="text"
+                        defaultValue={currentUser?.result?.name}
+                        placeholder="Your Name"
+                        {...register('name')}
+                    />
+                    {errors.name && <span className="form-message text-xs text-red-500">{errors.name.message}</span>}
+                </div>
+                <div className="w-1/2">
+                    <p className="text-xs">Date of birth:</p>
+                    <input
+                        className="w-full text-black pb-2 mt-2 bg-transparent border-b border-black outline-none focus:outline-none"
+                        type="date"
+                        defaultValue={ISOStringToDate(currentUser?.result?.date_of_birth)}
+                        {...register('date_of_birth')}
+                    />
+                    {errors.date_of_birth && (
+                        <span className="form-message text-xs text-red-500">{errors.date_of_birth.message}</span>
+                    )}
+                </div>
+            </div>
+            <div>
+                <p className="text-xs">Bio:</p>
+                <textarea
+                    className="w-full text-black pb-3 mt-2 bg-transparent border-b border-black outline-none focus:outline-none resize-none"
+                    defaultValue={currentUser?.result?.bio}
+                    placeholder="Your Bio"
+                    {...register('bio')}
+                />
+                {errors.bio && <span className="form-message text-xs text-red-500">{errors.bio.message}</span>}
+            </div>
+            <div>
+                <p className="text-xs">Website:</p>
                 <input
-                    className="w-1/2 text-black py-2 my-2 bg-transparent pl-6 border-b border-black outline-none focus:outline-none"
+                    className="w-full text-black pb-3 mt-2 bg-transparent border-b border-black outline-none focus:outline-none"
                     type="text"
-                    defaultValue={currentUser?.result?.name}
-                    placeholder="Your Name"
-                    {...register('name')}
+                    defaultValue={currentUser?.result?.website}
+                    placeholder="Your Website"
+                    {...register('website')}
                 />
-                {errors.name && <span className="form-message text-sm text-red-500">{errors.name.message}</span>}
+                {errors.website && <span className="form-message text-xs text-red-500">{errors.website.message}</span>}
+            </div>
+            <div>
+                <p className="text-xs">Username:</p>
+
                 <input
-                    className="w-1/2 text-black py-2 my-2 bg-transparent pl-6 border-b border-black outline-none focus:outline-none"
-                    type="date"
-                    defaultValue={ISOStringToDate(currentUser?.result?.date_of_birth)}
-                    {...register('date_of_birth')}
+                    className="w-full text-black pb-3 mt-2 bg-transparent border-b border-black outline-none focus:outline-none"
+                    type="text"
+                    defaultValue={currentUser?.result?.username}
+                    placeholder="Your Username"
+                    {...register('username')}
                 />
-                {errors.date_of_birth && (
-                    <span className="form-message text-sm text-red-500">{errors.date_of_birth.message}</span>
+                {errors.username && (
+                    <span className="form-message text-xs text-red-500">{errors.username.message}</span>
                 )}
             </div>
-
-            <input
-                className="w-full text-black py-2 my-2 bg-transparent pl-6 border-b border-black outline-none focus:outline-none"
-                type="text"
-                defaultValue={currentUser?.result?.bio}
-                placeholder="Your Bio"
-                {...register('bio')}
-            />
-            {errors.bio && <span className="form-message text-sm text-red-500">{errors.bio.message}</span>}
-
-            <input
-                className="w-full text-black py-2 my-2 bg-transparent pl-6 border-b border-black outline-none focus:outline-none"
-                type="text"
-                defaultValue={currentUser?.result?.website}
-                placeholder="Your Website"
-                {...register('website')}
-            />
-            {errors.website && <span className="form-message text-sm text-red-500">{errors.website.message}</span>}
-            <input
-                className="w-full text-black py-2 my-2 bg-transparent pl-6 border-b border-black outline-none focus:outline-none"
-                type="text"
-                defaultValue={currentUser?.result?.username}
-                placeholder="Your Username"
-                {...register('username')}
-            />
-            {errors.username && <span className="form-message text-sm text-red-500">{errors.username.message}</span>}
         </div>
     );
     const footerContent = !isLoading ? (

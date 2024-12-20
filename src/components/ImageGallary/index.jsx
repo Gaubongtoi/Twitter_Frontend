@@ -16,8 +16,8 @@ function ImageGallary({ images = [], video = [] }) {
                 speed={500}
                 elementClassNames={`${
                     images.length === 3 || images.length === 4
-                        ? 'grid grid-cols-2 gap-1 h-[300px] '
-                        : 'flex justify-center items-center'
+                        ? 'grid grid-cols-2 gap-1 h-[200px] sm:h-[300px]'
+                        : 'flex justify-center items-center gap-1'
                 } bg-neutral-100 rounded-lg`}
                 itemSelector="a" // Sử dụng <a> làm selector
                 controls={true}
@@ -66,7 +66,7 @@ function ImageGallary({ images = [], video = [] }) {
                         {/* Hình thứ hai */}
                         <a href={images[1]} className="block overflow-hidden rounded-lg">
                             <img
-                                className="object-cover w-full cursor-pointer transition duration-200 hover:scale-105 rounded-lg"
+                                className="object-cover w-full h-full cursor-pointer transition duration-200 hover:scale-105 rounded-lg"
                                 src={images[1]}
                                 data-src={images[1]}
                                 onClick={(e) => e.stopPropagation()}
@@ -75,7 +75,7 @@ function ImageGallary({ images = [], video = [] }) {
                         {/* Hình thứ ba */}
                         <a href={images[2]} className="block overflow-hidden rounded-lg">
                             <img
-                                className="object-cover w-full cursor-pointer transition duration-200 hover:scale-105 rounded-lg"
+                                className="object-cover w-full h-full cursor-pointer transition duration-200 hover:scale-105 rounded-lg"
                                 src={images[2]}
                                 data-src={images[2]}
                                 onClick={(e) => e.stopPropagation()}
@@ -92,7 +92,7 @@ function ImageGallary({ images = [], video = [] }) {
                     </>
                 ) : (
                     images.map((img, key) => (
-                        <a href={img} key={key} className="block">
+                        <a href={img} key={key} className="inline-block w-full">
                             <img
                                 className="object-cover w-full h-full cursor-pointer transition duration-200 hover:scale-105 rounded-lg"
                                 src={img}

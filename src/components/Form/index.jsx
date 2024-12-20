@@ -22,6 +22,7 @@ import 'tippy.js/dist/tippy.css'; // optional
 import './index.css';
 import useQuote from '../../hooks/modal/useQuote';
 import { Mention, MentionsInput } from 'react-mentions';
+import useTweetModal from '../../hooks/modal/useTweetModal';
 
 function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user_id }) {
     const { data: currentUser } = useCurrentUser();
@@ -39,6 +40,7 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
     const [currentIndex, setCurrentIndex] = useState(selectedFiles.length > 2 ? selectedFiles.length - 2 : 0);
     const [body, setBody] = useState('');
     const quoteModal = useQuote();
+    const tweetModal = useTweetModal();
     // Hàm để điều chỉnh nút điều hướng lùi
     const handlePrev = () => {
         if (currentIndex > 0) {
@@ -82,6 +84,14 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
             await delay(import.meta.env.VITE_DELAY_REQUEST);
             // console.log(resPost);
             let res;
+            if (tweet_type === 3 || tweet_type === 2) {
+                await http.post('/api/notifications', {
+                    tweet_id: postId,
+                    receiver_id: user_id,
+                    type: tweet_type,
+                    content: body,
+                });
+            }
             if (selectedFiles.length > 0) {
                 const resPost = await http.post(`/api/medias/upload-image`, formdata_imgs, {
                     headers: {
@@ -140,6 +150,8 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
                 id: loadingToast,
             });
             quoteModal.onClose();
+            tweetModal.onClose();
+
             setBody('');
             setHashtags([]);
             setMentions([]);
@@ -149,7 +161,9 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
             mutateTweetsOfMe();
             mutateTweetDetail();
         } catch (error) {
-            toast.error('Something went wrong!');
+            toast.error(`${error.response.data.message}`, {
+                id: loadingToast,
+            });
         } finally {
             setIsLoading(false);
         }
@@ -159,12 +173,14 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
         mutateTweetChildren,
         mutateTweetDetail,
         quoteModal,
+        tweetModal,
         postId,
         tweet_type,
         onClose,
         mutateTweetsOfMe,
         selectedFiles,
         hashtags,
+        user_id,
         mentions,
     ]);
     async function asyncMentions(query, callback) {
@@ -376,7 +392,7 @@ function Form({ placeholder, postId, tweet_type, isBBorder = true, onClose, user
                     </div>
 
                     <div className="absolute bottom-6 flex gap-4">
-                        <div className=" text-primary flex gap-4">
+                        <div className=" text-sky-600 flex gap-4">
                             <Tippy delay={[0, 50]} content="Media" placement="bottom">
                                 {selectedFiles.length >= 4 ? (
                                     <label>
